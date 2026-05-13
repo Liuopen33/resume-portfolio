@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= product.title %> - 校园二手交易</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<%- include('partials/header') %>
+<div class="container">
+  <div class="product-detail">
+    <div class="product-detail-image">
+      <img src="<%= product.image %>" alt="<%= product.title %>" onerror="this.src='/images/no-image.png'">
+    </div>
+    <div class="product-detail-info">
+      <h1><%= product.title %></h1>
+      <p class="detail-price">¥<%= product.price.toFixed(2) %></p>
+      <div class="detail-meta">
+        <span>分类：<%= product.category %></span>
+        <span>成色：<%= product.condition %></span>
+        <span>浏览：<%= product.views %>次</span>
+        <span>发布：<%= product.created_at %></span>
+      </div>
+      <div class="detail-seller">
+        <p>卖家：<%= product.seller_name %></p>
+        <% if (user && product.seller_phone) { %><p>联系方式：<%= product.seller_phone %></p><% } %>
+      </div>
+      <div class="detail-desc">
+        <h3>商品描述</h3>
+        <p><%= product.description || '暂无描述' %></p>
+      </div>
+      <% if (user && product.status === 'active' && user.id !== product.seller_id) { %>
+        <form action="/orders/create/<%= product.id %>" method="POST" onsubmit="return confirm('确认下单购买？')">
+          <button type="submit" class="btn btn-primary btn-lg">立即购买</button>
+        </form>
+      <% } else if (product.status !== 'active') { %>
+        <p class="status-badge"><%= product.status === 'sold' ? '已售出' : '已被预订' %></p>
+      <% } %>
+      <% if (user && user.id === product.seller_id) { %>
+        <p class="hint">这是你发布的商品</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+</body></html>

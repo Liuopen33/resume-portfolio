@@ -1,0 +1,17 @@
+<header class="header">
+  <div class="container header-inner">
+    <a href="/" class="logo">校园二手交易</a>
+    <nav>
+      <% if (user) { %>
+        <a href="/products/publish">发布商品</a>
+        <a href="/products/my">我的发布</a>
+        <a href="/orders/my">我的订单</a>
+        <span class="user-info"><%= user.username %></span>
+        <a href="/auth/logout" class="btn btn-outline">退出</a>
+      <% } else { %>
+        <a href="/auth/login" class="btn btn-outline">登录</a>
+        <a href="/auth/register" class="btn btn-primary">注册</a>
+      <% } %>
+    </nav>
+  </div>
+</header>

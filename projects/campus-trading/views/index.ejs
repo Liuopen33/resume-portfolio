@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园二手交易平台</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="container">
+    <!-- Search & Filter -->
+    <div class="search-bar">
+      <form action="/" method="GET" class="search-form">
+        <input type="text" name="search" placeholder="搜索商品..." value="<%= search %>">
+        <select name="category">
+          <option value="">全部分类</option>
+          <% categories.forEach(c => { %>
+            <option value="<%= c.category %>" <%= category === c.category ? 'selected' : '' %>><%= c.category %></option>
+          <% }) %>
+        </select>
+        <select name="sort">
+          <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>最新发布</option>
+          <option value="cheapest" <%= sort === 'cheapest' ? 'selected' : '' %>>价格从低到高</option>
+          <option value="priciest" <%= sort === 'priciest' ? 'selected' : '' %>>价格从高到低</option>
+        </select>
+        <button type="submit" class="btn btn-primary">搜索</button>
+        <% if (user) { %>
+          <a href="/products/publish" class="btn btn-success">发布商品</a>
+        <% } %>
+      </form>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+      <% if (products.length === 0) { %>
+        <div class="empty-state">
+          <p>暂无商品，<% if (!user) { %>登录后<% } %>来发布第一个吧！</p>
+        </div>
+      <% } %>
+
+      <% products.forEach(p => { %>
+        <a href="/product/<%= p.id %>" class="product-card">
+          <div class="product-image">
+            <img src="<%= p.image %>" alt="<%= p.title %>" onerror="this.src='/images/no-image.png'">
+          </div>
+          <div class="product-info">
+            <h3 class="product-title"><%= p.title %></h3>
+            <span class="product-price">¥<%= p.price.toFixed(2) %></span>
+            <div class="product-meta">
+              <span class="product-category"><%= p.category %></span>
+              <span class="product-condition"><%= p.condition %></span>
+            </div>
+            <span class="product-seller"><%= p.seller_name %></span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</body>
+</html>

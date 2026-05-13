@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的发布 - 校园二手交易</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<%- include('partials/header') %>
+<div class="container">
+  <h2>我的发布</h2>
+  <% if (products.length === 0) { %><p class="empty-state">还没有发布任何商品</p><% } %>
+  <div class="product-grid">
+    <% products.forEach(p => { %>
+      <div class="product-card managed">
+        <div class="product-image"><img src="<%= p.image %>" alt="<%= p.title %>" onerror="this.src='/images/no-image.png'"></div>
+        <div class="product-info">
+          <h3><%= p.title %></h3>
+          <p>¥<%= p.price.toFixed(2) %> · <%= p.status === 'active' ? '在售' : p.status === 'sold' ? '已售' : '已预订' %></p>
+          <div class="manage-actions">
+            <% if (p.status === 'active') { %>
+              <form action="/products/sold/<%= p.id %>" method="POST" style="display:inline"><button class="btn btn-sm">标记已售</button></form>
+            <% } %>
+            <form action="/products/delete/<%= p.id %>" method="POST" style="display:inline" onsubmit="return confirm('确认删除？')"><button class="btn btn-sm btn-danger">删除</button></form>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+</body></html>

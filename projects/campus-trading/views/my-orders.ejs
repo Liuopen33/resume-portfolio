@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的订单 - 校园二手交易</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<%- include('partials/header') %>
+<div class="container">
+  <h2>我买到的</h2>
+  <% if (buys.length === 0) { %><p class="empty-state">暂无购买记录</p><% } %>
+  <div class="order-list">
+    <% buys.forEach(o => { %>
+      <div class="order-item">
+        <img src="<%= o.image %>" alt="" onerror="this.src='/images/no-image.png'" width="80">
+        <div class="order-info">
+          <h4><%= o.product_title %></h4>
+          <p>¥<%= o.price.toFixed(2) %> · 卖家：<%= o.seller_name %></p>
+          <span class="order-status status-<%= o.status %>"><%= o.status === 'pending' ? '待确认' : o.status === 'completed' ? '已完成' : '已取消' %></span>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <h2>我卖出的</h2>
+  <% if (sells.length === 0) { %><p class="empty-state">暂无卖出记录</p><% } %>
+  <div class="order-list">
+    <% sells.forEach(o => { %>
+      <div class="order-item">
+        <img src="<%= o.image %>" alt="" onerror="this.src='/images/no-image.png'" width="80">
+        <div class="order-info">
+          <h4><%= o.product_title %></h4>
+          <p>¥<%= o.price.toFixed(2) %> · 买家：<%= o.buyer_name %></p>
+          <span class="order-status status-<%= o.status %>"><%= o.status === 'pending' ? '待确认' : o.status === 'completed' ? '已完成' : '已取消' %></span>
+          <% if (o.status === 'pending') { %>
+            <div class="order-actions">
+              <form action="/orders/status/<%= o.id %>" method="POST" style="display:inline">
+                <input type="hidden" name="status" value="completed"><button class="btn btn-sm btn-success">确认成交</button>
+              </form>
+              <form action="/orders/status/<%= o.id %>" method="POST" style="display:inline">
+                <input type="hidden" name="status" value="cancelled"><button class="btn btn-sm btn-danger">取消</button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+</body></html>
