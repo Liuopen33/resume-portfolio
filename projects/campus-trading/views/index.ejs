@@ -1,62 +1,85 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>校园二手交易平台</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园二手交易平台</title><link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <%- include('partials/header') %>
 
   <div class="container">
-    <!-- Search & Filter -->
+    <!-- Search -->
     <div class="search-bar">
       <form action="/" method="GET" class="search-form">
-        <input type="text" name="search" placeholder="搜索商品..." value="<%= search %>">
+        <input type="text" name="search" placeholder="🔍 搜索你想要的二手好物..." value="<%= search %>">
         <select name="category">
-          <option value="">全部分类</option>
+          <option value="">📂 全部分类</option>
           <% categories.forEach(c => { %>
-            <option value="<%= c.category %>" <%= category === c.category ? 'selected' : '' %>><%= c.category %></option>
+            <option value="<%= c %>" <%= category === c ? 'selected' : '' %>><%= c %></option>
           <% }) %>
         </select>
         <select name="sort">
-          <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>最新发布</option>
-          <option value="cheapest" <%= sort === 'cheapest' ? 'selected' : '' %>>价格从低到高</option>
-          <option value="priciest" <%= sort === 'priciest' ? 'selected' : '' %>>价格从高到低</option>
+          <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>🕐 最新</option>
+          <option value="cheapest" <%= sort === 'cheapest' ? 'selected' : '' %>>💰 价格低→高</option>
+          <option value="priciest" <%= sort === 'priciest' ? 'selected' : '' %>>💎 价格高→低</option>
         </select>
         <button type="submit" class="btn btn-primary">搜索</button>
-        <% if (user) { %>
-          <a href="/products/publish" class="btn btn-success">发布商品</a>
-        <% } %>
       </form>
     </div>
 
     <!-- Product Grid -->
-    <div class="product-grid">
-      <% if (products.length === 0) { %>
-        <div class="empty-state">
-          <p>暂无商品，<% if (!user) { %>登录后<% } %>来发布第一个吧！</p>
-        </div>
-      <% } %>
+    <% if (products.length === 0) { %>
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>暂无商品</h3>
+        <p>换个关键词试试，或者<% if (!user) { %>登录后<% } %>来发布第一个吧！</p>
+        <% if (user) { %><a href="/products/publish" class="btn btn-primary">发布商品</a><% } %>
+      </div>
+    <% } %>
 
+    <div class="product-grid">
       <% products.forEach(p => { %>
-        <a href="/product/<%= p.id %>" class="product-card">
-          <div class="product-image">
-            <img src="<%= p.image %>" alt="<%= p.title %>" onerror="this.src='/images/no-image.png'">
-          </div>
+        <div class="product-card">
+          <a href="/product/<%= p.id %>" class="product-link">
+            <div class="product-image">
+              <div class="img-placeholder img-cat-<%= p.category %>">
+                <span class="cat-emoji"><%= getCatEmoji(p.category) %></span>
+              </div>
+            </div>
+          </a>
           <div class="product-info">
-            <h3 class="product-title"><%= p.title %></h3>
-            <span class="product-price">¥<%= p.price.toFixed(2) %></span>
-            <div class="product-meta">
-              <span class="product-category"><%= p.category %></span>
+            <a href="/product/<%= p.id %>" class="product-link">
+              <h3 class="product-title"><%= p.title %></h3>
+            </a>
+            <div class="product-price-row">
+              <span class="product-price">¥<%= p.price.toFixed(2) %></span>
               <span class="product-condition"><%= p.condition %></span>
             </div>
-            <span class="product-seller"><%= p.seller_name %></span>
+            <div class="product-meta">
+              <span class="product-category"><%= p.category %></span>
+              <span class="product-seller">👤 <%= p.seller_name %></span>
+            </div>
           </div>
-        </a>
+          <% if (user) { %>
+            <button class="fav-btn-top" onclick="toggleFav(event, <%= p.id %>, this)" title="收藏">
+              ❤️
+            </button>
+          <% } %>
+        </div>
       <% }) %>
     </div>
+
+    <!-- Pagination -->
+    <% if (totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="/?page=<%= i %>&search=<%= search %>&category=<%= category %>&sort=<%= sort %>"
+           class="page-link <%= i === page ? 'active' : '' %>"><%= i %></a>
+      <% } %>
+    </div>
+    <% } %>
   </div>
+
+  <script src="/js/main.js"></script>
 </body>
 </html>

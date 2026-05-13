@@ -143,6 +143,37 @@ const db = {
     if (o) { o.status = status; save(); return true; }
     return false;
   },
+
+  // Favorites
+  addFavorite: (userId, productId) => {
+    const exists = data.favorites.find(f => f.user_id === parseInt(userId) && f.product_id === parseInt(productId));
+    if (exists) return false;
+    data.favorites.push({ id: data.favorites.length + 1, user_id: parseInt(userId), product_id: parseInt(productId), created_at: new Date().toISOString() });
+    save(); return true;
+  },
+  removeFavorite: (userId, productId) => {
+    const idx = data.favorites.findIndex(f => f.user_id === parseInt(userId) && f.product_id === parseInt(productId));
+    if (idx >= 0) { data.favorites.splice(idx, 1); save(); return true; }
+    return false;
+  },
+  isFavorited: (userId, productId) => data.favorites.some(f => f.user_id === parseInt(userId) && f.product_id === parseInt(productId)),
+  getFavorites: (userId) => data.favorites
+    .filter(f => f.user_id === parseInt(userId))
+    .map(f => {
+      const p = data.products.find(pp => pp.id === f.product_id);
+      if (!p) return null;
+      const seller = data.users.find(u => u.id === p.seller_id);
+      return { ...f, product: { ...p, seller_name: seller ? seller.username : '未知' } };
+    }).filter(Boolean).sort((a, b) => b.created_at > a.created_at ? 1 : -1),
+
+  // User stats
+  getUserStats: (userId) => ({
+    productCount: data.products.filter(p => p.seller_id === parseInt(userId)).length,
+    activeProducts: data.products.filter(p => p.seller_id === parseInt(userId) && p.status === 'active').length,
+    buyCount: data.orders.filter(o => o.buyer_id === parseInt(userId)).length,
+    sellCount: data.orders.filter(o => o.seller_id === parseInt(userId)).length,
+    favoriteCount: data.favorites.filter(f => f.user_id === parseInt(userId)).length,
+  }),
 };
 
 module.exports = db;

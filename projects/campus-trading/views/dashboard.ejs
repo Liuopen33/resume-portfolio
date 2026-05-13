@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人中心 - 校园二手交易</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<%- include('partials/header') %>
+<div class="container">
+  <h2 class="page-title">📊 个人中心</h2>
+
+  <div class="dashboard-grid">
+    <div class="dash-card">
+      <div class="dash-icon">📦</div>
+      <div class="dash-num"><%= stats.productCount %></div>
+      <div class="dash-label">发布商品</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-icon">🟢</div>
+      <div class="dash-num"><%= stats.activeProducts %></div>
+      <div class="dash-label">在售中</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-icon">🛒</div>
+      <div class="dash-num"><%= stats.buyCount %></div>
+      <div class="dash-label">已购买</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-icon">💰</div>
+      <div class="dash-num"><%= stats.sellCount %></div>
+      <div class="dash-label">已卖出</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-icon">❤️</div>
+      <div class="dash-num"><%= stats.favoriteCount %></div>
+      <div class="dash-label">收藏宝贝</div>
+    </div>
+  </div>
+
+  <div class="dash-links">
+    <a href="/products/my" class="btn btn-outline">📋 我的发布</a>
+    <a href="/products/publish" class="btn btn-primary">➕ 发布新商品</a>
+    <a href="/orders/my" class="btn btn-outline">📦 我的订单</a>
+    <a href="/favorites" class="btn btn-outline">❤️ 我的收藏</a>
+  </div>
+</div>
+</body>
+</html>

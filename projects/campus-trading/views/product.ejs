@@ -5,38 +5,67 @@
 <body>
 <%- include('partials/header') %>
 <div class="container">
+  <div class="breadcrumb"><a href="/">首页</a> / <a href="/?category=<%= product.category %>"><%= product.category %></a> / <%= product.title %></div>
+
   <div class="product-detail">
     <div class="product-detail-image">
-      <img src="<%= product.image %>" alt="<%= product.title %>" onerror="this.src='/images/no-image.png'">
+      <div class="img-placeholder img-cat-<%= product.category %> img-large">
+        <span class="cat-emoji"><%= getCatEmoji(product.category) %></span>
+      </div>
     </div>
     <div class="product-detail-info">
       <h1><%= product.title %></h1>
       <p class="detail-price">¥<%= product.price.toFixed(2) %></p>
-      <div class="detail-meta">
-        <span>分类：<%= product.category %></span>
-        <span>成色：<%= product.condition %></span>
-        <span>浏览：<%= product.views %>次</span>
-        <span>发布：<%= product.created_at %></span>
+
+      <div class="detail-tags">
+        <span class="tag"><%= product.category %></span>
+        <span class="tag tag-condition"><%= product.condition %></span>
+        <span class="tag tag-views">👁 <%= product.views %> 次浏览</span>
       </div>
-      <div class="detail-seller">
-        <p>卖家：<%= product.seller_name %></p>
-        <% if (user && product.seller_phone) { %><p>联系方式：<%= product.seller_phone %></p><% } %>
-      </div>
+
       <div class="detail-desc">
-        <h3>商品描述</h3>
-        <p><%= product.description || '暂无描述' %></p>
+        <h3>📝 商品描述</h3>
+        <p><%= product.description || '卖家很懒，没有写描述~' %></p>
       </div>
-      <% if (user && product.status === 'active' && user.id !== product.seller_id) { %>
-        <form action="/orders/create/<%= product.id %>" method="POST" onsubmit="return confirm('确认下单购买？')">
-          <button type="submit" class="btn btn-primary btn-lg">立即购买</button>
-        </form>
-      <% } else if (product.status !== 'active') { %>
-        <p class="status-badge"><%= product.status === 'sold' ? '已售出' : '已被预订' %></p>
-      <% } %>
-      <% if (user && user.id === product.seller_id) { %>
-        <p class="hint">这是你发布的商品</p>
-      <% } %>
+
+      <div class="detail-seller">
+        <div class="seller-avatar">👤</div>
+        <div class="seller-info">
+          <p class="seller-name"><%= product.seller_name %></p>
+          <p class="seller-time">发布于 <%= product.created_at %></p>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <% if (user && product.status === 'active' && user.id !== product.seller_id) { %>
+          <button class="btn btn-primary btn-lg" onclick="contactSeller(<%= product.id %>)">📞 联系卖家</button>
+          <form action="/orders/create/<%= product.id %>" method="POST" style="display:inline" onsubmit="return confirm('确认下单购买？')">
+            <button type="submit" class="btn btn-success btn-lg">🛒 立即购买</button>
+          </form>
+          <button class="btn btn-outline btn-lg fav-btn" id="favBtn" onclick="toggleFav(event, <%= product.id %>, this)" data-faved="<%= isFav %>">
+            <%= isFav ? '❤️ 已收藏' : '🤍 收藏' %>
+          </button>
+        <% } else if (!user) { %>
+          <a href="/auth/login" class="btn btn-primary btn-lg">登录后购买</a>
+        <% } else if (product.status !== 'active') { %>
+          <span class="status-badge big"><%= product.status === 'sold' ? '已售出' : '已被预订' %></span>
+        <% } else { %>
+          <span class="hint">这是你自己发布的商品</span>
+        <% } %>
+      </div>
+
+      <!-- Contact Modal -->
+      <div id="contactModal" class="modal" style="display:none">
+        <div class="modal-content">
+          <span class="modal-close" onclick="document.getElementById('contactModal').style.display='none'">&times;</span>
+          <h3>📞 联系卖家</h3>
+          <div id="contactInfo">加载中...</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-</body></html>
+
+<script src="/js/main.js"></script>
+</body>
+</html>
