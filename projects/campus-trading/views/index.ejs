@@ -27,6 +27,14 @@
       </form>
     </div>
 
+    <!-- Category Chips -->
+    <div class="category-chips">
+      <a href="/?search=<%= search %>&sort=<%= sort %>" class="chip <%= !category ? 'active' : '' %>">📂 全部</a>
+      <% categories.forEach(c => { %>
+        <a href="/?category=<%= c %>&search=<%= search %>&sort=<%= sort %>" class="chip <%= category === c ? 'active' : '' %>"><%= c %></a>
+      <% }) %>
+    </div>
+
     <!-- Product Grid -->
     <% if (products.length === 0) { %>
       <div class="empty-state">

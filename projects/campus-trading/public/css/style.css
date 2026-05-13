@@ -27,6 +27,12 @@ a{text-decoration:none;color:inherit}
 .search-form input:focus{border-color:#1a569a}
 .search-form select{padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;background:#fff;font-family:inherit;outline:none}
 
+/* Category Chips */
+.category-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:6px 14px;border-radius:20px;font-size:13px;border:1.5px solid #e0e0e0;color:#666;text-decoration:none;transition:.2s;background:#fff}
+.chip:hover{border-color:#1a569a;color:#1a569a}
+.chip.active{background:#1a569a;color:#fff;border-color:#1a569a}
+
 /* Product Images */
 .product-image img{width:100%;height:100%;object-fit:cover;display:block}
 .product-image{aspect-ratio:4/3;overflow:hidden;background:#f0f0f0}
