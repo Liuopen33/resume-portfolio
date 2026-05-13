@@ -40,11 +40,10 @@
     <div class="product-grid">
       <% products.forEach(p => { %>
         <div class="product-card">
+          <% if (p.views > 50) { %><span class="product-tag-hot">🔥 热门</span><% } %>
           <a href="/product/<%= p.id %>" class="product-link">
             <div class="product-image">
-              <div class="img-placeholder img-cat-<%= p.category %>">
-                <span class="cat-emoji"><%= getCatEmoji(p.category) %></span>
-              </div>
+              <img src="/image/<%= p.id %>" alt="<%= p.title %>" loading="lazy">
             </div>
           </a>
           <div class="product-info">

@@ -19,9 +19,7 @@
       <div class="product-card">
         <a href="/product/<%= p.id %>" class="product-link">
           <div class="product-image">
-            <div class="img-placeholder img-cat-<%= p.category %>">
-              <span class="cat-emoji"><%= getCatEmoji(p.category) %></span>
-            </div>
+            <img src="/image/<%= p.id %>" alt="<%= p.title %>" loading="lazy">
           </div>
         </a>
         <div class="product-info">

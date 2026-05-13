@@ -27,22 +27,18 @@ a{text-decoration:none;color:inherit}
 .search-form input:focus{border-color:#1a569a}
 .search-form select{padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;background:#fff;font-family:inherit;outline:none}
 
-/* Image Placeholder */
-.img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;min-height:180px}
-.img-cat-图书教材{background:linear-gradient(135deg,#e8f5e9,#c8e6c9)}
-.img-cat-数码电子{background:linear-gradient(135deg,#e3f2fd,#bbdefb)}
-.img-cat-生活电器{background:linear-gradient(135deg,#fff3e0,#ffe0b2)}
-.img-cat-家居用品{background:linear-gradient(135deg,#fce4ec,#f8bbd0)}
-.img-cat-运动户外{background:linear-gradient(135deg,#e0f2f1,#b2dfdb)}
-.img-cat-乐器艺术{background:linear-gradient(135deg,#ede7f6,#d1c4e9)}
-.img-cat-服饰鞋包{background:linear-gradient(135deg,#f3e5f5,#e1bee7)}
-.img-cat-美妆护肤{background:linear-gradient(135deg,#fce4ec,#f8bbd0)}
-.img-large{min-height:360px;font-size:80px;border-radius:10px}
+/* Product Images */
+.product-image img{width:100%;height:100%;object-fit:cover;display:block}
+.product-image{aspect-ratio:4/3;overflow:hidden;background:#f0f0f0}
+.product-main-image{width:100%;border-radius:10px;display:block;aspect-ratio:4/3;object-fit:cover}
+
+/* Hot badge */
+.product-tag-hot{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,#ff6b6b,#e74c3c);color:#fff;font-size:11px;padding:3px 8px;border-radius:4px;z-index:5;font-weight:600}
 
 /* Product Grid */
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:16px}
-.product-card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:transform .2s,box-shadow .2s;position:relative}
-.product-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.product-card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:transform .2s,box-shadow .2s;position:relative;display:flex;flex-direction:column}
+.product-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
 .product-link{display:block;color:inherit}
 .product-image{height:180px;overflow:hidden}
 .product-image .img-placeholder{border-radius:10px 10px 0 0}

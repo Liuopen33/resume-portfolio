@@ -9,9 +9,7 @@
 
   <div class="product-detail">
     <div class="product-detail-image">
-      <div class="img-placeholder img-cat-<%= product.category %> img-large">
-        <span class="cat-emoji"><%= getCatEmoji(product.category) %></span>
-      </div>
+      <img src="/image/<%= product.id %>" alt="<%= product.title %>" class="product-main-image">
     </div>
     <div class="product-detail-info">
       <h1><%= product.title %></h1>

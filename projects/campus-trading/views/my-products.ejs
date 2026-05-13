@@ -10,7 +10,7 @@
   <div class="product-grid">
     <% products.forEach(p => { %>
       <div class="product-card managed">
-        <div class="product-image"><img src="<%= p.image %>" alt="<%= p.title %>" onerror="this.src='/images/no-image.png'"></div>
+        <div class="product-image"><img src="/image/<%= p.id %>" alt="<%= p.title %>" loading="lazy"></div>
         <div class="product-info">
           <h3><%= p.title %></h3>
           <p>¥<%= p.price.toFixed(2) %> · <%= p.status === 'active' ? '在售' : p.status === 'sold' ? '已售' : '已预订' %></p>
