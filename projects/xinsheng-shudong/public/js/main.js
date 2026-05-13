@@ -1,3 +1,23 @@
+// Dark mode toggle
+function toggleTheme() {
+  const root = document.documentElement;
+  const body = document.body;
+  const btn = document.querySelector('.theme-toggle');
+  body.classList.toggle('dark');
+  const isDark = body.classList.contains('dark');
+  btn.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+// Load saved theme
+(function() {
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    const btn = document.querySelector('.theme-toggle');
+    if (btn) btn.textContent = '☀️';
+  }
+})();
+
 // Mood selector
 document.querySelectorAll('.mood-option').forEach(opt => {
   opt.addEventListener('click', function() {
@@ -18,7 +38,7 @@ if (textarea && charCount) {
 
 // Like button
 function likePost(postId, btn) {
-  fetch(`/like/${postId}`, { method: 'POST' })
+  fetch('/like/' + postId, { method: 'POST' })
     .then(res => res.json())
     .then(data => {
       btn.classList.add('liked');

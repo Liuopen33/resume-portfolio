@@ -35,11 +35,49 @@ app.use((req, res, next) => {
 // Home - show the tree hole wall
 app.get('/', (req, res) => {
   const mood = req.query.mood || 'all';
+  const search = req.query.search || '';
   let filtered = [...posts].reverse();
+
   if (mood !== 'all') {
     filtered = filtered.filter(p => p.mood === mood);
   }
-  res.render('index', { posts: filtered, mood, moods: aiEngine.moods, replies });
+  if (search) {
+    const s = search.toLowerCase();
+    filtered = filtered.filter(p => p.content.toLowerCase().includes(s) || p.nickname.toLowerCase().includes(s));
+  }
+  res.render('index', { posts: filtered, mood, search, moods: aiEngine.moods, replies });
+});
+
+// Emotion trends (ECharts data)
+app.get('/api/trends', (req, res) => {
+  const counts = {};
+  aiEngine.moods.forEach(m => { counts[m.key] = 0; });
+  posts.forEach(p => {
+    if (counts[p.mood] !== undefined) counts[p.mood]++;
+    else counts[p.mood] = 1;
+  });
+  const data = aiEngine.moods
+    .filter(m => m.key !== 'other')
+    .map(m => ({ name: m.label, value: counts[m.key] || 0, icon: m.icon }));
+  res.json(data);
+});
+
+// Weekly trend
+app.get('/api/weekly', (req, res) => {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const count = posts.filter(p => p.createdAt.startsWith(dateStr)).length;
+    days.push({ date: dateStr.slice(5), count });
+  }
+  res.json(days);
+});
+
+// About page
+app.get('/about', (req, res) => {
+  res.render('about', { moods: aiEngine.moods, totalPosts: posts.length });
 });
 
 // Submit a confession / feeling

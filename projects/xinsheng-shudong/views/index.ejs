@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" id="htmlRoot">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>心声树洞 - 把你的心情说给树洞听</title>
   <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 </head>
 <body>
 
   <!-- Hero -->
   <header class="hero">
     <div class="container">
-      <h1>🌳 心声树洞</h1>
+      <div class="hero-top">
+        <h1>🌳 心声树洞</h1>
+        <button class="theme-toggle" onclick="toggleTheme()" title="切换深色模式">🌙</button>
+      </div>
       <p class="hero-sub">每一份心声都值得被倾听 · 匿名分享，AI 温暖回应</p>
       <p class="hero-badge">🏆 豆包-应用生成创作挑战赛「创作新星奖」获奖作品</p>
     </div>
   </header>
 
   <div class="container">
-
     <!-- Post Form -->
     <div class="post-form card">
       <h3>向树洞说说你的心里话</h3>
@@ -41,22 +44,33 @@
       </form>
     </div>
 
-    <!-- Mood Filter -->
-    <div class="mood-filter">
-      <a href="/" class="filter-chip <%= mood === 'all' ? 'active' : '' %>">全部</a>
-      <% moods.forEach(m => { %>
-        <a href="/?mood=<%= m.key %>" class="filter-chip <%= mood === m.key ? 'active' : '' %>">
-          <%= m.icon %> <%= m.label %>
-        </a>
-      <% }) %>
+    <!-- Navigation -->
+    <nav class="sub-nav">
+      <a href="/about">📖 关于树洞</a>
+      <a href="#trends">📊 情绪趋势</a>
+    </nav>
+
+    <!-- Search & Filter -->
+    <div class="controls">
+      <form action="/" method="GET" class="search-form">
+        <input type="text" name="search" placeholder="🔍 搜索心声..." value="<%= search || '' %>">
+        <% if (mood !== 'all') { %><input type="hidden" name="mood" value="<%= mood %>"><% } %>
+        <button type="submit">搜索</button>
+      </form>
+      <div class="mood-filter">
+        <a href="/" class="filter-chip <%= mood === 'all' ? 'active' : '' %>">全部</a>
+        <% moods.forEach(m => { %>
+          <a href="/?mood=<%= m.key %><%= search ? '&search=' + search : '' %>" class="filter-chip <%= mood === m.key ? 'active' : '' %>">
+            <%= m.icon %> <%= m.label %>
+          </a>
+        <% }) %>
+      </div>
     </div>
 
     <!-- Posts Wall -->
     <div class="posts-wall">
       <% if (posts.length === 0) { %>
-        <div class="empty-state">
-          <p>🌿 还没有人向树洞倾诉，来做第一个吧</p>
-        </div>
+        <div class="empty-state"><p>🌿 还没有人向树洞倾诉，来做第一个吧</p></div>
       <% } %>
 
       <% posts.forEach(post => { %>
@@ -72,28 +86,21 @@
             <div class="ai-header">
               <span class="ai-badge">🤖 树洞AI · 倾听中</span>
               <span class="ai-mood-tag" style="background:<%= moods.find(m => m.key === post.aiReply.mood).color %>20;color:<%= moods.find(m => m.key === post.aiReply.mood).color %>">
-                <%= moods.find(m => m.key === post.aiReply.mood).icon %> <%= moods.find(m => m.key === post.aiReply.mood).label %>
+                <%= moods.find(m => m.key === post.aiReply.mood).icon %>
               </span>
             </div>
             <p class="ai-text"><%= post.aiReply.reply %></p>
           </div>
 
-          <!-- Actions -->
           <div class="post-actions">
-            <button class="like-btn" onclick="likePost('<%= post.id %>', this)">
-              🤍 <span class="like-count"><%= post.likes %></span>
-            </button>
+            <button class="like-btn" onclick="likePost('<%= post.id %>', this)">🤍 <span class="like-count"><%= post.likes %></span></button>
           </div>
 
-          <!-- User Replies -->
           <% const postReplies = replies ? replies.filter(r => r.postId === post.id) : []; %>
           <% postReplies.forEach(r => { %>
-            <div class="user-reply">
-              <strong><%= r.nickname %></strong>: <%= r.content %>
-            </div>
+            <div class="user-reply"><strong><%= r.nickname %></strong>: <%= r.content %></div>
           <% }) %>
 
-          <!-- Reply Form -->
           <form action="/reply/<%= post.id %>" method="POST" class="reply-form">
             <input type="text" name="content" placeholder="写下你的回应..." maxlength="200">
             <button type="submit">回复</button>
@@ -101,12 +108,60 @@
         </div>
       <% }) %>
     </div>
+
+    <!-- Emotion Trends -->
+    <div class="card trends-section" id="trends">
+      <h3>📊 情绪趋势</h3>
+      <div class="charts-grid">
+        <div id="pieChart" style="height:300px;"></div>
+        <div id="lineChart" style="height:300px;"></div>
+      </div>
+    </div>
   </div>
 
   <footer class="footer">
-    <p>🌳 心声树洞 · 你的情绪安全屋 | 豆包创作挑战赛「创作新星奖」</p>
+    <p>🌳 心声树洞 · 你的情绪安全屋 | <a href="/about">关于我们</a></p>
+    <p class="footer-small">豆包创作挑战赛「创作新星奖」· 匿名社区 · AI情绪陪伴</p>
   </footer>
 
   <script src="/js/main.js"></script>
+  <script>
+  // ECharts - Pie
+  (function() {
+    fetch('/api/trends').then(r => r.json()).then(data => {
+      const chart = echarts.init(document.getElementById('pieChart'));
+      chart.setOption({
+        tooltip: { trigger: 'item' },
+        series: [{
+          type: 'pie', radius: ['40%', '70%'],
+          data: data.map(d => ({ name: d.icon + ' ' + d.name, value: d.value })),
+          label: { formatter: '{b}\n{d}%' },
+          itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 }
+        }],
+        color: ['#f6c23e','#6c8ebf','#e8a87c','#e06c6c','#7ec8a0','#b0a8b9','#f2b88c']
+      });
+    });
+
+    fetch('/api/weekly').then(r => r.json()).then(data => {
+      const chart = echarts.init(document.getElementById('lineChart'));
+      chart.setOption({
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: data.map(d => d.date) },
+        yAxis: { type: 'value', minInterval: 1 },
+        series: [{
+          type: 'line', data: data.map(d => d.count),
+          smooth: true, symbol: 'circle', symbolSize: 8,
+          lineStyle: { color: '#7ec8a0', width: 3 },
+          itemStyle: { color: '#5b8c5a' },
+          areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[
+            {offset:0, color:'rgba(126,200,160,.3)'},
+            {offset:1, color:'rgba(126,200,160,0)'}
+          ])}
+        }],
+        grid: { top: 10, right: 10, bottom: 20, left: 30 }
+      });
+    });
+  })();
+  </script>
 </body>
 </html>
